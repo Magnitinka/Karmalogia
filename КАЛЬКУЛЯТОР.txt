@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нумерологический калькулятор</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .calculator {
+            max-width: 1100px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
+            padding: 30px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 28px;
+            letter-spacing: 2px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #ccc;
+            margin-bottom: 30px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 15px;
+        }
+        .input-group {
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            color: #ffd700;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #ffd700, #ffb347);
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a1a2e;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 25px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        .results {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 24px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            max-height: 800px;
+            overflow-y: auto;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-label {
+            font-weight: 600;
+            color: #ffd700;
+            min-width: 260px;
+            font-size: 14px;
+        }
+        .result-value {
+            color: #fff;
+            font-family: monospace;
+            font-size: 15px;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+        .result-desc {
+            font-size: 11px;
+            color: #aaa;
+            margin-left: 8px;
+        }
+        .section-title {
+            color: #ffd700;
+            font-size: 18px;
+            margin: 15px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        .double-da-block {
+            background: rgba(255, 100, 0, 0.15);
+            border-left: 3px solid #ffa500;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 12px;
+            font-size: 13px;
+        }
+        .double-da-title {
+            color: #ffaa66;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .variant-block {
+            background: rgba(0, 100, 100, 0.15);
+            border-left: 3px solid #33cccc;
+            padding: 12px 15px;
+            margin: 12px 0;
+            border-radius: 12px;
+        }
+        .variant-title {
+            color: #66ffcc;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+        @media (max-width: 750px) {
+            .calculator {
+                padding: 20px;
+            }
+            .result-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .result-label {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="calculator">
+    <h1>✨ КАРМИЧЕСКАЯ ТАРОНУМЕРОЛОГИЯ ✨</h1>
+    <div class="subtitle">Расчёт основных показателей по дате рождения</div>
+
+    <div class="input-group">
+        <label>📅 Дата рождения</label>
+        <input type="date" id="birthDate" value="1978-10-28">
+    </div>
+
+    <button id="calcBtn">🔮 РАССЧИТАТЬ 🔮</button>
+
+    <div class="results" id="results">
+        <div style="text-align: center; color: #aaa;">Введите дату рождения и нажмите «Рассчитать»</div>
+    </div>
+    <div class="footer">Для чисел 23–31 все показатели рассчитываются с основным и дополнительным ДА</div>
+</div>
+
+<script>
+    // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+    
+    // Приведение числа к диапазону 1-22 (для арканов)
+    function toArcane(num) {
+        if (num === 0) return 22;
+        let result = num;
+        while (result > 22) result -= 22;
+        while (result < 1) result += 22;
+        return result;
+    }
+
+    // Приведение числа к однозначному (1-9)
+    function toSingleDigit(num) {
+        let result = num;
+        while (result > 9) {
+            result = result.toString().split('').reduce((sum, d) => sum + parseInt(d, 10), 0);
+        }
+        return result;
+    }
+
+    // Сумма цифр числа (кверсумма)
+    function digitSum(num) {
+        return Math.abs(num).toString().split('').reduce((sum, d) => sum + parseInt(d, 10), 0);
+    }
+
+    // Получение числа души (дата рождения -> однозначное)
+    function getSoulNumber(day) {
+        return toSingleDigit(day);
+    }
+
+    // Получение числа судьбы (сумма всех цифр даты -> однозначное)
+    function getDestinyNumber(day, month, year) {
+        const allDigits = day.toString() + month.toString() + year.toString();
+        const sum = allDigits.split('').reduce((total, digit) => total + parseInt(digit, 10), 0);
+        return toSingleDigit(sum);
+    }
+
+    // ========== ДВОЙНОЙ ДА (только для чисел 23-31) ==========
+    // Согласно таблице:
+    // 23 → основной 5, дополнительный 1
+    // 24 → основной 6, дополнительный 2
+    // 25 → основной 7, дополнительный 3
+    // 26 → основной 8, дополнительный 4
+    // 27 → основной 9, дополнительный 5
+    // 28 → основной 1, дополнительный 6
+    // 29 → основной 2, дополнительный 7
+    // 30 → основной 3, дополнительный 8
+    // 31 → основной 4, дополнительный 9
+    function getDoubleDA(day) {
+        if (day >= 23 && day <= 31) {
+            const doubleDAMap = {
+                23: { main: 5, additional: 1 },
+                24: { main: 6, additional: 2 },
+                25: { main: 7, additional: 3 },
+                26: { main: 8, additional: 4 },
+                27: { main: 9, additional: 5 },
+                28: { main: 1, additional: 6 },
+                29: { main: 2, additional: 7 },
+                30: { main: 3, additional: 8 },
+                31: { main: 4, additional: 9 }
+            };
+            return doubleDAMap[day];
+        }
+        return null;
+    }
+
+    // ========== РАСЧЁТ ПОКАЗАТЕЛЕЙ ДЛЯ КОНКРЕТНОГО ДА ==========
+    // daValue — значение ДА (1-22)
+    function calculateForDA(daValue, maRaw, gaRaw) {
+        // СЗ (социальная задача) = ДА + МА + ГА
+        let czRaw = daValue + maRaw + gaRaw;
+        let cz = toArcane(czRaw);
+        
+        // ОПВ (ошибка прошлого воплощения) = |ДА - МА|
+        let opvRaw = Math.abs(daValue - maRaw);
+        let opv = toArcane(opvRaw);
+        
+        // ТП (точка препятствий) = ДА + МА
+        let tpRaw = daValue + maRaw;
+        let tp = toArcane(tpRaw);
+        
+        // ЗП (зона профессий) = ДА + 4×МА + ГА
+        let zpRaw = daValue + 4 * maRaw + gaRaw;
+        let zp = toArcane(zpRaw);
+        
+        // ЗЗ (зона здоровья) = ДА + 2×МА + ГА
+        let zzRaw = daValue + 2 * maRaw + gaRaw;
+        let zz = toArcane(zzRaw);
+        
+        // ЗД (зона денег) = ДА + 10×МА + ГА
+        let zdRaw = daValue + 10 * maRaw + gaRaw;
+        let zd = toArcane(zdRaw);
+        
+        // КУ1 = СЗ + ОПВ
+        let ku1Raw = czRaw + opvRaw;
+        let ku1 = toArcane(ku1Raw);
+        
+        // КУ2 = ДА + ОПВ
+        let ku2Raw = daValue + opvRaw;
+        let ku2 = toArcane(ku2Raw);
+        
+        // КУ3 = |ДА - ГА|
+        let ku3Raw = Math.abs(daValue - gaRaw);
+        let ku3 = toArcane(ku3Raw);
+        
+        // КУ4 = ГА + СЗ
+        let ku4Raw = gaRaw + czRaw;
+        let ku4 = toArcane(ku4Raw);
+        
+        return {
+            da: daValue,
+            cz, opv, tp, zp, zz, zd,
+            ku1, ku2, ku3, ku4,
+            czRaw, opvRaw, tpRaw, zpRaw, zzRaw, zdRaw
+        };
+    }
+
+    // ========== ОСНОВНЫЕ НУМЕРОЛОГИЧЕСКИЕ ПОКАЗАТЕЛИ ==========
+    function calculateNumerology(birthDate) {
+        const [year, month, day] = birthDate.split('-').map(Number);
+        
+        // Число Души и Судьбы
+        const soulNumber = getSoulNumber(day);
+        const destinyNumber = getDestinyNumber(day, month, year);
+        
+        // Константы
+        const maRaw = month;
+        const ma = toArcane(maRaw);
+        const gaRaw = digitSum(year);
+        const ga = toArcane(gaRaw);
+        
+        // ЖА (аркан жизни)
+        const allDigits = day.toString() + month.toString() + year.toString();
+        const jaRaw = allDigits.split('').reduce((sum, d) => sum + parseInt(d, 10), 0);
+        const ja = toArcane(jaRaw);
+        
+        // КБ (кармическая болезнь) = |МА - ГА|
+        const kbRaw = Math.abs(maRaw - gaRaw);
+        const kb = toArcane(kbRaw);
+        
+        // Двойной ДА
+        const doubleDA = getDoubleDA(day);
+        
+        // Расчёт для основного ДА
+        let mainResult = null;
+        let additionalResult = null;
+        
+        if (doubleDA) {
+            // Для чисел 23-31: два варианта
+            mainResult = calculateForDA(doubleDA.main, maRaw, gaRaw);
+            additionalResult = calculateForDA(doubleDA.additional, maRaw, gaRaw);
+        } else {
+            // Для обычных чисел (1-22) — один вариант
+            const regularDa = toArcane(day);
+            mainResult = calculateForDA(regularDa, maRaw, gaRaw);
+        }
+        
+        // Энергия Архангела (ЭА)
+        let dayStr = day.toString().padStart(2, '0');
+        let monthStr = month.toString().padStart(2, '0');
+        let dm = parseInt(dayStr + monthStr, 10);
+        let eaProduct = dm * year;
+        let eaSum = digitSum(eaProduct);
+        
+        // Родовая энергия (ЭР)
+        let erProduct = day * month * year;
+        let erSum = digitSum(erProduct);
+        
+        // Срединная линия
+        const midline = (eaSum / 7).toFixed(2);
+        
+        // Программный код
+        let fullNumber = parseInt(dayStr + monthStr + year.toString(), 10);
+        let division = fullNumber / 7;
+        let divisionStr = division.toString();
+        let decimalPart = "";
+        if (divisionStr.includes('.')) {
+            decimalPart = divisionStr.split('.')[1];
+        } else if (divisionStr.includes(',')) {
+            decimalPart = divisionStr.split(',')[1];
+        }
+        let programCode = decimalPart.charAt(0);
+        if (programCode === "" || isNaN(parseInt(programCode))) {
+            programCode = 0;
+        } else {
+            programCode = parseInt(programCode, 10);
+        }
+        
+        return {
+            soulNumber,
+            destinyNumber,
+            doubleDA,
+            day,
+            maRaw, ma,
+            gaRaw, ga,
+            ja, kb,
+            dm, eaProduct, eaSum, erProduct, erSum, midline, programCode,
+            mainResult,
+            additionalResult
+        };
+    }
+
+    // Названия арканов
+    const arcaneNames = {
+        1: "Маг", 2: "Верховная Жрица", 3: "Императрица", 4: "Император",
+        5: "Иерофант", 6: "Влюблённые", 7: "Колесница", 8: "Правосудие",
+        9: "Отшельник", 10: "Колесо Фортуны", 11: "Сила", 12: "Повешенный",
+        13: "Смерть", 14: "Умеренность", 15: "Дьявол", 16: "Башня",
+        17: "Звезда", 18: "Луна", 19: "Солнце", 20: "Страшный Суд",
+        21: "Мир", 22: "Шут"
+    };
+
+    function getArcaneName(num) {
+        return arcaneNames[num] || "Аркан " + num;
+    }
+
+    function getProgramCodeDescription(code) {
+        const descriptions = {
+            0: "Тяжкий грех. Был причиной массовых убийств. Обнулён и перезапущен.",
+            1: "Из учёных, лекторов, писателей.",
+            2: "Целитель (Рейки, космоэнергетика, белая магия).",
+            3: "Не появляется (пояснение: цифр 3,6,9 после запятой не бывает).",
+            4: "Ремесленник, создание материальных объектов.",
+            5: "Создавал программное обеспечение десятки тысяч лет назад.",
+            6: "Не появляется.",
+            7: "Кармический код. Придумывал искушения и испытания.",
+            8: "Создавал информационную защиту, ментальное поле, родовые связи.",
+            9: "Не появляется."
+        };
+        return descriptions[code] || "Код не определён";
+    }
+
+    function renderVariant(title, result, daValue) {
+        return `
+            <div class="variant-block">
+                <div class="variant-title">${title} (ДА = ${daValue} — ${getArcaneName(daValue)})</div>
+                <div class="result-item">
+                    <span class="result-label">🎯 СЗ (социальная задача)</span>
+                    <span class="result-value">${result.cz} — ${getArcaneName(result.cz)}</span>
+                    <span class="result-desc">(ДА + МА + ГА)</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">⚠️ ОПВ (ошибка прошлого воплощения)</span>
+                    <span class="result-value">${result.opv} — ${getArcaneName(result.opv)}</span>
+                    <span class="result-desc">(|ДА - МА|)</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">⛰️ ТП (точка препятствий)</span>
+                    <span class="result-value">${result.tp} — ${getArcaneName(result.tp)}</span>
+                    <span class="result-desc">(ДА + МА)</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">💼 ЗП (зона профессий)</span>
+                    <span class="result-value">${result.zp} — ${getArcaneName(result.zp)}</span>
+                    <span class="result-desc">(ДА + 4×МА + ГА)</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">🌿 ЗЗ (зона здоровья)</span>
+                    <span class="result-value">${result.zz} — ${getArcaneName(result.zz)}</span>
+                    <span class="result-desc">(ДА + 2×МА + ГА)</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">💰 ЗД (зона денег)</span>
+                    <span class="result-value">${result.zd} — ${getArcaneName(result.zd)}</span>
+                    <span class="result-desc">(ДА + 10×МА + ГА)</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">🌀 КУ1 (СЗ + ОПВ)</span>
+                    <span class="result-value">${result.ku1} — ${getArcaneName(result.ku1)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">🌀 КУ2 (ДА + ОПВ)</span>
+                    <span class="result-value">${result.ku2} — ${getArcaneName(result.ku2)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">🌀 КУ3 (|ДА - ГА|)</span>
+                    <span class="result-value">${result.ku3} — ${getArcaneName(result.ku3)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">🌀 КУ4 (ГА + СЗ)</span>
+                    <span class="result-value">${result.ku4} — ${getArcaneName(result.ku4)}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderResults(data) {
+        const container = document.getElementById('results');
+        const programCodeDesc = getProgramCodeDescription(data.programCode);
+        
+        let doubleDABlock = "";
+        let variantsHtml = "";
+        
+        if (data.doubleDA) {
+            // Для чисел 23-31
+            doubleDABlock = `
+                <div class="double-da-block">
+                    <div class="double-da-title">🔮 ДВОЙНОЙ ДА (число рождения ${data.day} больше 22)</div>
+                    <div>• Основной ДА: <strong>${data.doubleDA.main}</strong> — ${getArcaneName(data.doubleDA.main)}</div>
+                    <div>• Дополнительный ДА: <strong>${data.doubleDA.additional}</strong> — ${getArcaneName(data.doubleDA.additional)}</div>
+                    <div style="font-size: 11px; color: #aaa; margin-top: 5px;">Для числа ${data.day} используются оба значения ДА</div>
+                </div>
+            `;
+            
+            variantsHtml = `
+                <div class="section-title">📊 РАСЧЁТЫ ПО ДА (зависят от значения ДА)</div>
+                ${renderVariant("📌 ПЕРВЫЙ ВАРИАНТ (основной ДА)", data.mainResult, data.doubleDA.main)}
+                ${renderVariant("📌 ВТОРОЙ ВАРИАНТ (дополнительный ДА)", data.additionalResult, data.doubleDA.additional)}
+            `;
+        } else {
+            // Для обычных чисел 1-22
+            variantsHtml = `
+                <div class="section-title">📊 РАСЧЁТЫ ПО ДА</div>
+                ${renderVariant("📌 ЕДИНСТВЕННЫЙ ВАРИАНТ", data.mainResult, data.mainResult.da)}
+            `;
+        }
+        
+        container.innerHTML = `
+            <div class="section-title">📖 ОСНОВНЫЕ ЧИСЛА</div>
+            <div class="result-item">
+                <span class="result-label">✨ Число Души</span>
+                <span class="result-value">${data.soulNumber}</span>
+                <span class="result-desc">(дата рождения → однозначное)</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">🌟 Число Судьбы</span>
+                <span class="result-value">${data.destinyNumber}</span>
+                <span class="result-desc">(сумма всех цифр даты → однозначное)</span>
+            </div>
+            
+            ${doubleDABlock}
+            
+            ${variantsHtml}
+            
+            <div class="section-title">🌙 ПОСТОЯННЫЕ АРКАНЫ (не зависят от ДА)</div>
+            <div class="result-item">
+                <span class="result-label">🌙 МА (аркан месяца)</span>
+                <span class="result-value">${data.ma} — ${getArcaneName(data.ma)}</span>
+                <span class="result-desc">(месяц: ${data.maRaw})</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">⭐ ГА (аркан года)</span>
+                <span class="result-value">${data.ga} — ${getArcaneName(data.ga)}</span>
+                <span class="result-desc">(сумма цифр года: ${data.gaRaw})</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">🔥 ЖА (аркан жизни)</span>
+                <span class="result-value">${data.ja} — ${getArcaneName(data.ja)}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">🩺 КБ (кармическая болезнь)</span>
+                <span class="result-value">${data.kb} — ${getArcaneName(data.kb)}</span>
+                <span class="result-desc">(|МА - ГА| = |${data.maRaw} - ${data.gaRaw}| = ${Math.abs(data.maRaw - data.gaRaw)})</span>
+            </div>
+            
+            <div class="section-title">🔋 ЭНЕРГЕТИЧЕСКИЕ ПОКАЗАТЕЛИ</div>
+            <div class="result-item">
+                <span class="result-label">✨ Энергия Архангела (ЭА)</span>
+                <span class="result-value">${data.dm} × ${(data.eaProduct / data.dm).toFixed(0)} = ${data.eaProduct.toLocaleString()} → сумма цифр: ${data.eaSum}</span>
+                <span class="result-desc">(ДМ × Г, норма 26-28)</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">🏠 Родовая энергия (ЭР)</span>
+                <span class="result-value">${data.erProduct.toLocaleString()} → сумма цифр: ${data.erSum}</span>
+                <span class="result-desc">(Д × М × Г, норма 26-28)</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">📊 Срединная линия</span>
+                <span class="result-value">${data.midline}</span>
+                <span class="result-desc">(сумма цифр ЭА / 7)</span>
+            </div>
+            
+            <div class="section-title">💻 ПРОГРАММНЫЙ КОД ЧЕЛОВЕКА</div>
+            <div class="result-item">
+                <span class="result-label">🔢 Код</span>
+                <span class="result-value">${data.programCode}</span>
+                <span class="result-desc">${programCodeDesc}</span>
+            </div>
+        `;
+    }
+
+    // Обработчик кнопки
+    document.getElementById('calcBtn').addEventListener('click', () => {
+        const birthDate = document.getElementById('birthDate').value;
+        if (!birthDate) {
+            alert('Пожалуйста, выберите дату рождения');
+            return;
+        }
+        const result = calculateNumerology(birthDate);
+        renderResults(result);
+    });
+
+    // Автоматический расчёт при загрузке страницы
+    window.addEventListener('DOMContentLoaded', () => {
+        const defaultDate = document.getElementById('birthDate').value;
+        if (defaultDate) {
+            const result = calculateNumerology(defaultDate);
+            renderResults(result);
+        }
+    });
+</script>
+</body>
+</html>
